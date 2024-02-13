@@ -20,8 +20,8 @@ jobs:
     
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: $TERRAFORM_VERSION
+      with:
+        terraform_version: $TERRAFORM_VERSION
     
     - name: Init terraform
       run: terraform init
