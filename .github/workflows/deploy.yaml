@@ -5,6 +5,10 @@ on:
 
 env: 
   TERRAFORM_VERSION: "1.7.3" 
+  TFLINT_VERSION: "v0.50.3"
+
+
+
 
 jobs:
   CI:
@@ -16,8 +20,21 @@ jobs:
     
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: $TERRAFORM_VERSION
+        with:
+          terraform_version: $TERRAFORM_VERSION
+    
+    - name: Init terraform
+      run: terraform init
 
-    - name: test 
-      run: terraform version
+    - name: Terraform fmt
+      run: terraform fmt -check -recursive
+
+    - name: Setup TFLint
+      uses: terraform-linters/setup-tflint@v4.0.0
+      with:
+        tflint_version: $TFLINT_VERSION
+
+    - name: Init & Run TFLint
+      run: |
+        tflint --init
+        tflint -f compact
