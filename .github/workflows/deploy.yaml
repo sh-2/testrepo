@@ -1,0 +1,23 @@
+name: tfdeploy
+
+on:
+  push:
+
+env: 
+  TERRAFORM_VERSION: "1.7.3" 
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout  
+      uses: actions/checkout@v4
+    
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: $TERRAFORM_VERSION
+
+    - name: test 
+      run: terraform version
