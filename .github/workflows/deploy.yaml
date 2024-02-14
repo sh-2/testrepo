@@ -34,10 +34,10 @@ jobs:
     #   with:
     #     tflint_version: $TFLINT_VERSION
 
-    - uses: terraform-linters/setup-tflint@v2
+    - uses: terraform-linters/setup-tflint@v4
       name: Setup tflint
       with:
-        tflint_version: $TFLINT_VERSION
+        tflint_version: v0.39.2
 
     - name: Init & Run TFLint
       run: |
