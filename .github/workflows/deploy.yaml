@@ -27,7 +27,6 @@ jobs:
       run: |
         terraform init
         terraform fmt -check -recursive
-        terraform --version
 
     - uses: terraform-linters/setup-tflint@v4
       name: Setup tflint
