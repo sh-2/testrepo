@@ -4,7 +4,7 @@ on:
   push:
 
 env: 
-  TERRAFORM_VERSION: "1.7.3" 
+  TERRAFORM_VERSION: 1.7.3
   TFLINT_VERSION: v0.39.2
 
 
