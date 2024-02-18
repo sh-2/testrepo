@@ -54,7 +54,7 @@ jobs:
       id: plan
       run: |
         cd environments/${{ github.base_ref }}
-        terraform plan
+        terraform plan >> $GiTHUB_OUTPUT
       continue-on-error: true
 
     - name: Push Terraform Plan Output to Pull request
