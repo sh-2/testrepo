@@ -13,7 +13,7 @@ on:
       # - closed
 
 env: 
-  ENVIRONMENT: environments/dev
+  # ENVIRONMENT: environments/dev
   TERRAFORM_VERSION: 1.7.3
   TFLINT_VERSION: v0.50.3
 
@@ -35,7 +35,7 @@ jobs:
     
     - name: Init & Fmt terraform
       run: |
-        cd environments/${{env.ENVIRONMENT}}
+        cd environments/${{ github.base_ref }}
         pwd
         terraform init
         terraform fmt -check -recursive
@@ -53,7 +53,7 @@ jobs:
     - name: Terraform Plan
       id: plan
       run: |
-        cd environments/${{env.ENVIRONMENT}}
+        cd environments/${{ github.base_ref }}
         pwd
         terraform plan
       continue-on-error: true
