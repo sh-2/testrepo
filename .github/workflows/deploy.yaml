@@ -10,6 +10,7 @@ on:
       - prod
     types:
       - opened
+      - synchronize
       # - closed
 
 env: 
