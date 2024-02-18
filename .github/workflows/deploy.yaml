@@ -36,7 +36,7 @@ jobs:
     - name: Init & Fmt terraform
       run: |
         cd environments/${{ github.base_ref }}
-        pwd
+        echo "pwd"
         terraform init
         terraform fmt -check -recursive
 
@@ -54,7 +54,7 @@ jobs:
       id: plan
       run: |
         cd environments/${{ github.base_ref }}
-        pwd
+        echo "pwd"
         terraform plan
       continue-on-error: true
 
