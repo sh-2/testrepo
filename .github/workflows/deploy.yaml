@@ -36,7 +36,6 @@ jobs:
     - name: Init & Fmt terraform
       run: |
         cd environments/${{ github.base_ref }}
-        echo "pwd"
         terraform init
         terraform fmt -check -recursive
 
@@ -54,7 +53,6 @@ jobs:
       id: plan
       run: |
         cd environments/${{ github.base_ref }}
-        echo "pwd"
         terraform plan
       continue-on-error: true
 
@@ -67,5 +65,5 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `## Terraform checks in directory '${{ matrix.directory }}'\n` + output
+            body: `## Terraform checks in directory environments/'${{ github.base_ref }}'\n` + output
           })
