@@ -35,6 +35,8 @@ jobs:
     
     - name: Init & Fmt terraform
       run: |
+        cd environments/${{env.ENVIRONMENT}}
+        pwd
         terraform init
         terraform fmt -check -recursive
 
@@ -52,6 +54,7 @@ jobs:
       id: plan
       run: |
         cd environments/${{env.ENVIRONMENT}}
+        pwd
         terraform plan
       continue-on-error: true
 
