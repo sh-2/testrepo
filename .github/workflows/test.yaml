@@ -28,3 +28,6 @@ jobs:
 
     - name: Echo
       run: ls -la
+
+    - name: Echo
+      run: cat sub/subfile
