@@ -32,8 +32,8 @@ jobs:
     - name: test and upload test result
       run: |
         mkdir result
-        touch result/sample.txt
-        date >> result/sample.txt
+        touch results/sample.txt
+        date >> results/sample.txt
       continue-on-error: true
 #        {run your test script  --junit-xml results/sample.xml } 
 
