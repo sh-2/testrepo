@@ -31,6 +31,7 @@ jobs:
 # ----------------------------------------
     - name: test and upload test result
       run: |
+        touch result/sample.txt
         date >> result/sample.txt
       continue-on-error: true
 #        {run your test script  --junit-xml results/sample.xml } 
