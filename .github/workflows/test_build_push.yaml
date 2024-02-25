@@ -68,7 +68,7 @@ jobs:
     - name: Test Build, tag, and push image to Amazon ECR
       id: build-image
       env:
-        ECR_REGISTRY: testResistory
+        ECR_REGISTRY: testresistory
         # ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.event.pull_request.head.sha }}
       run: |
