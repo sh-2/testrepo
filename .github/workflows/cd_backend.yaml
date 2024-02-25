@@ -1,0 +1,79 @@
+name: cd_backend
+
+on:
+  pull_request:
+    branches:
+      - dev
+      - stg
+      - main
+    types:
+      - closed
+
+
+env: 
+  ECS_TASK_DEFINITION: taskdefinition.json
+  ECR_REPOSITORY: myrep
+  CONTAINER_NAME: backend-1
+  ECS_SERVICE: backend-1-service
+
+jobs:
+  cd_backend:
+    environment: production
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout  
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+
+
+
+# configure AWS credential
+
+# AWS credential
+#     - name: Login to Amazon ECR
+#       id: login-ecr
+#       uses: aws-actions/amazon-ecr-login@v2
+
+# Docker build & test
+
+    - name: Test Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: testresistory
+        # ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.event.pull_request.head.sha }}
+        IMAGE_TAG2: ${{github.sha}}
+      run: |
+        # Build a docker container and
+        # push it to ECR so that it can
+        # be deployed to ECS.
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+    - name: Fill in the new image ID in the Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ${{ env.ECS_TASK_DEFINITION }}
+        container-name: ${{ env.CONTAINER_NAME }}
+        image: ${{ steps.build-image.outputs.image }}
+
+
+    - name: Upload rendered task-definition for deployment
+      uses: actions/upload-artifact@v4
+      with:
+        name: task-definition-for-${{ env.ECS_SERVICE }}
+        path: ${{ steps.task-def.outputs.task-definition }}
+        
+
+    # - name: Deploy Amazon ECS task definition
+    #   uses: aws-actions/amazon-ecs-deploy-task-definition@1
+    #   with:
+    #     task-definition: ${{ steps.task-def.outputs.task-definition }}
+    #     service: ${{ env.ECS_SERVICE }}
+    #     cluster: ${{ env.ECS_CLUSTER }}
+    #     wait-for-service-stability: true
