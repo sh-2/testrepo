@@ -15,7 +15,7 @@ on:
 env: 
 #  ENVIRONMENT: environments/dev
   ECS_TASK_DEFINITION: taskdefinition.json
-  ECR_REPOSITORY: myecrrepository
+  ECR_REPOSITORY: myrep
   CONTAINER_NAME: backend-1
   ECS_SERVICE: backend-1-service
 
