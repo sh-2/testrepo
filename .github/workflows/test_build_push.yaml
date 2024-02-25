@@ -14,8 +14,9 @@ on:
 
 env: 
 #  ENVIRONMENT: environments/dev
-  TERRAFORM_VERSION: 1.7.3
-  TFLINT_VERSION: v0.50.3
+  ECS_TASK_DEFINITION: taskdefinition.json
+  CONTAINER_NAME: backend-1
+  ECS_SERVICE: backend-1-service
 
 jobs:
   BackEnd_CI:
@@ -28,14 +29,21 @@ jobs:
       with:
         submodules: recursive
 
+
+
 # ----------------------------------------
+
+# Set up run time and build
+# https://docs.github.com/en/actions/automating-builds-and-tests
+
+
     - name: test and upload test result
       run: |
+        
         mkdir results
         touch results/sample.txt
         date >> results/sample.txt
-#      continue-on-error: true
-#        {run your test script  --junit-xml results/sample.xml } 
+      # continue-on-error: true
 
     - name: Upload Unit Test Results
       if: ${{ always() }}
@@ -43,8 +51,9 @@ jobs:
       with:
         name: Unit Test Results
         path: results/*.txt
-        retention-days: 5
+        # retention-days: 5
 # ----------------------------------------
+
 
 # configure AWS credential
 
@@ -58,30 +67,35 @@ jobs:
     - name: Test Build, tag, and push image to Amazon ECR
       id: build-image
       env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REGISTRY: testResistory
+        # ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.event.pull_request.head.sha }}
       run: |
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
-        docker build -t $IMAGE_TAG .
-        docker images
-
-        docker images
-        # docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        # echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-    # - name: Fill in the new image ID in the Amazon ECS task definition
-    #   id: task-def
-    #   uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
-    #   with:
-    #     task-definition: ${{ env.ECS_TASK_DEFINITION }}
-    #     container-name: ${{ env.CONTAINER_NAME }}
-    #     image: ${{ steps.build-image.outputs.image }}
+    - name: Fill in the new image ID in the Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@1
+      with:
+        task-definition: ${{ env.ECS_TASK_DEFINITION }}
+        container-name: ${{ env.CONTAINER_NAME }}
+        image: ${{ steps.build-image.outputs.image }}
+
+
+    - name: Upload rendered task-definition for deployment
+      uses: actions/upload-artifact@v4
+      with:
+        name: task-definition-for-${{ env.ECS_SERVICE }}
+        path: ${{ steps.task-def.outputs.task-definition }}
+        
 
     # - name: Deploy Amazon ECS task definition
-    #   uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
+    #   uses: aws-actions/amazon-ecs-deploy-task-definition@1
     #   with:
     #     task-definition: ${{ steps.task-def.outputs.task-definition }}
     #     service: ${{ env.ECS_SERVICE }}
