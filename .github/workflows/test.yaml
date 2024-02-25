@@ -53,6 +53,7 @@ jobs:
 #       uses: aws-actions/amazon-ecr-login@v2
 
 # Docker build & test
+
     - name: Test Build, tag, and push image to Amazon ECR
       id: build-image
       env:
